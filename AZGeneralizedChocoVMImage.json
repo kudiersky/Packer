@@ -1,0 +1,49 @@
+
+
+        
+{
+    "builders": [
+        {
+            "type": "azure-arm",
+            "client_id": "XXXXXXXXXXXXX",
+            "client_secret": "XXXXXXXXXXXXXX",
+            "tenant_id": "XXXXXXXXXXXXXX",
+            "subscription_id": "XXXXXXXXXXXXXX",
+            "managed_image_resource_group_name": "ResourceGroup",
+            "managed_image_name": "ImageName",
+            "os_type": "Windows",
+            "image_publisher": "MicrosoftWindowsServer",
+            "image_offer": "WindowsServer",
+            "image_sku": "2016-Datacenter",
+            "communicator": "winrm",
+            "winrm_use_ssl": true,
+            "winrm_insecure": true,
+            "winrm_timeout": "3m",
+            "winrm_username": "packer",
+            "azure_tags": {
+                "dept": "Engineering",
+                "task": "Image deployment"
+            },
+            "location": "northeurope", 
+            "vm_size": "Standard_B2ms"
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "powershell",
+            "inline": [
+                "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))",
+                "choco install -y netfx-4.5.2-devpack",
+                "choco install service-fabric-sdk -y"
+            ]
+        },
+        {
+            "type": "windows-shell",
+            "inline": [
+                "C:\\Windows\\System32\\sysprep\\sysprep.exe /quiet /generalize /oobe /quit"
+            ]
+        }
+    ]
+}
+
+
